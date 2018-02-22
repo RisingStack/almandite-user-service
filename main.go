@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 const DefaultHTTPAddr = ":0"
@@ -24,14 +27,26 @@ func main() {
 	flag.Parse()
 	listener, err := net.Listen("tcp", httpAddr)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	tcpAddr := listener.Addr().(*net.TCPAddr)
 
-	fmt.Printf("Open the following URL in the browser: http://%s:%d", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 
-	http.Serve(listener, nil)
+	go func() {
+		select {
+		case <-signalCh:
+			log.Println("signal received, shutting down...")
+			os.Exit(0)
+		}
+	}()
+
+	log.Printf("Open the following URL in the browser: http://%s:%d\n", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
+	if err := http.Serve(listener, nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func convertIPtoString(ip net.IP) string {
