@@ -38,7 +38,7 @@ func main() {
 	go func() {
 		select {
 		case <-signalCh:
-			log.Println("signal received, shutting down...")
+			log.Println("Signal received, shutting down...")
 			os.Exit(0)
 		}
 	}()
