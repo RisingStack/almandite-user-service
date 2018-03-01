@@ -52,11 +52,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	user, err := UserRepository.GetByID(1)
+	users, err := UserRepository.Fetch()
 	if err != nil {
-		log.Println("Failed to get user", err)
+		log.Println("Failed to get users", err)
 	}
-	log.Println("User", user)
+	log.Println("Users", users)
 
 	log.Printf("Open the following URL in the browser: http://%s:%d\n", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
 

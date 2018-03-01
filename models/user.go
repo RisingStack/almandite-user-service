@@ -1,4 +1,4 @@
-package model
+package models
 
 // User type definition
 type User struct {

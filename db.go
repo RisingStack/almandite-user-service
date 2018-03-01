@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-pg/pg/orm"
 
-	"github.com/RisingStack/almandite-user-service/model"
-	"github.com/RisingStack/almandite-user-service/repository"
+	"github.com/RisingStack/almandite-user-service/models"
+	"github.com/RisingStack/almandite-user-service/repositories"
 
 	"github.com/go-pg/pg"
 )
@@ -17,7 +17,7 @@ var db *pg.DB
 var dbLogger = log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC)
 
 // UserRepository ...
-var UserRepository repository.UserRepository
+var UserRepository repositories.UserRepository
 
 // OpenDBConnection opens a connection to the DB
 func OpenDBConnection() {
@@ -42,13 +42,13 @@ func OpenDBConnection() {
 }
 
 func initRepositories() {
-	UserRepository = repository.NewUserRepository(db)
+	UserRepository = repositories.NewUserRepository(db)
 }
 
 // Migrate does ...
 func Migrate() error {
 	// TODO: should this run in a transaction?
-	for _, model := range []interface{}{&model.User{}} {
+	for _, model := range []interface{}{&models.User{}} {
 		err := db.CreateTable(model, &orm.CreateTableOptions{
 			IfNotExists: true,
 		})
