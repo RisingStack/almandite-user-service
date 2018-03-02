@@ -5,8 +5,8 @@ import (
 	"github.com/go-pg/pg"
 )
 
-// IUserRepository interface
-type IUserRepository interface {
+// UserRepository interface
+type UserRepository interface {
 	GetByID(id int) (*models.User, error)
 	Fetch() (*[]models.User, error)
 	Create(user *models.User) error
@@ -19,7 +19,7 @@ type userRepository struct {
 }
 
 // NewUserRepository returns a repository that implements the UserRepository interface
-func NewUserRepository(dbConn *pg.DB) IUserRepository {
+func NewUserRepository(dbConn *pg.DB) UserRepository {
 	return &userRepository{
 		DB: dbConn,
 	}

@@ -15,33 +15,36 @@ import (
 var db *pg.DB
 var dbLogger = log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC)
 
-// UserRepository ...
-var UserRepository IUserRepository
+// Users provide access ...
+var Users UserRepository
 
 // OpenConnection opens a connection to the DB
-func OpenConnection() {
-	// TODO: config or environment variables
-	db = pg.Connect(&pg.Options{
-		User:     "postgres",
-		Password: "w7o4bvt8ncp0ksd",
-		Database: "almandite",
-	})
+func OpenConnection(connURL string, debugSQL bool) error {
+	pgOptions, err := pg.ParseURL(connURL)
+	if err != nil {
+		return err
+	}
 
-	// TODO: make query log configurable
-	db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
-		query, err := event.FormattedQuery()
-		if err != nil {
-			dbLogger.Println("Failed to format query", err)
-		}
+	db = pg.Connect(pgOptions)
 
-		dbLogger.Println(query, time.Since(event.StartTime))
-	})
+	if debugSQL {
+		db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
+			query, err := event.FormattedQuery()
+			if err != nil {
+				dbLogger.Println("Failed to format query", err)
+			}
+
+			dbLogger.Println(query, time.Since(event.StartTime))
+		})
+	}
 
 	initRepositories()
+
+	return nil
 }
 
 func initRepositories() {
-	UserRepository = NewUserRepository(db)
+	Users = NewUserRepository(db)
 }
 
 // Migrate does ...
