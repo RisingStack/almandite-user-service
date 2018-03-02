@@ -1,4 +1,4 @@
-package main
+package repositories
 
 import (
 	"log"
@@ -8,7 +8,6 @@ import (
 	"github.com/go-pg/pg/orm"
 
 	"github.com/RisingStack/almandite-user-service/models"
-	"github.com/RisingStack/almandite-user-service/repositories"
 
 	"github.com/go-pg/pg"
 )
@@ -17,10 +16,10 @@ var db *pg.DB
 var dbLogger = log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC)
 
 // UserRepository ...
-var UserRepository repositories.UserRepository
+var UserRepository IUserRepository
 
-// OpenDBConnection opens a connection to the DB
-func OpenDBConnection() {
+// OpenConnection opens a connection to the DB
+func OpenConnection() {
 	// TODO: config or environment variables
 	db = pg.Connect(&pg.Options{
 		User:     "postgres",
@@ -42,7 +41,7 @@ func OpenDBConnection() {
 }
 
 func initRepositories() {
-	UserRepository = repositories.NewUserRepository(db)
+	UserRepository = NewUserRepository(db)
 }
 
 // Migrate does ...
@@ -60,8 +59,8 @@ func Migrate() error {
 	return nil
 }
 
-// CloseDBConnection closes the connection to the DB
-func CloseDBConnection() {
+// CloseConnection closes the connection to the DB
+func CloseConnection() {
 	if err := db.Close(); err != nil {
 		dbLogger.Println("Failed to close connection", err)
 	} else {

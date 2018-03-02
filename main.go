@@ -42,21 +42,9 @@ func main() {
 		select {
 		case <-signalCh:
 			log.Println("Signal received, shutting down...")
-			CloseDBConnection()
 			os.Exit(0)
 		}
 	}()
-
-	OpenDBConnection()
-	if err := Migrate(); err != nil {
-		log.Fatal(err)
-	}
-
-	users, err := UserRepository.Fetch()
-	if err != nil {
-		log.Println("Failed to get users", err)
-	}
-	log.Println("Users", users)
 
 	log.Printf("Open the following URL in the browser: http://%s:%d\n", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
 
