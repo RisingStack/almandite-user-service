@@ -6,9 +6,10 @@ import (
 )
 
 // Healthcheck handles "/healthcheck"
-func Healthcheck(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("content-type", "application/json")
-	json.NewEncoder(rw).Encode(
+func Healthcheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(
 		struct {
 			Status string `json:"status"`
 		}{

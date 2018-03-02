@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/RisingStack/almandite-user-service/handlers"
+	"github.com/RisingStack/almandite-user-service/middleware"
 )
 
 const DefaultHTTPAddr = ":0"
@@ -47,7 +48,11 @@ func main() {
 
 	log.Printf("Open the following URL in the browser: http://%s:%d\n", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
 
-	http.HandleFunc("/healthcheck", handlers.Healthcheck)
+	http.HandleFunc("/healthcheck",
+		middleware.Chain(
+			middleware.Timer,
+			middleware.Logger,
+		)(handlers.Healthcheck))
 
 	if err := http.Serve(listener, nil); err != nil {
 		log.Fatal(err)
