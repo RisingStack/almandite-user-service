@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestHealthcheck(t *testing.T) {
+func TestChain(t *testing.T) {
 	req, err := http.NewRequest("GET", "/healthcheck", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -41,10 +41,12 @@ func TestHealthcheck(t *testing.T) {
 
 	handler.ServeHTTP(rr, req)
 
-	if calledTimes != 2 {
-		t.Error("handler has not called both middleware")
+	expectedCalledTimes := 2
+	if calledTimes != expectedCalledTimes {
+		t.Errorf("handler has not called both middleware: got %d want %d", calledTimes, expectedCalledTimes)
 	}
-	if calledFirst != "last" {
-		t.Error("the handler has called the first attached middleware first")
+	expectedCalledFirst := "last"
+	if calledFirst != expectedCalledFirst {
+		t.Errorf("the handler has called the first attached middleware first: got %s want %s", calledFirst, expectedCalledFirst)
 	}
 }
