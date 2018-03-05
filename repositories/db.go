@@ -12,46 +12,57 @@ import (
 	"github.com/go-pg/pg"
 )
 
-var db *pg.DB
-var dbLogger = log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC)
+// DAL (Data Access Layer)
+type DAL interface {
+	OpenConnection(connURL string, debugSQL bool) error
+	Migrate() error
+	CloseConnection()
+	Users() UserRepository
+}
 
-// Users provide access ...
-var Users UserRepository
+type dal struct {
+	db     *pg.DB
+	logger *log.Logger
+	users  UserRepository
+}
+
+// NewDAL returns an implementation for the DAL interface
+func NewDAL() DAL {
+	return &dal{
+		logger: log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC),
+	}
+}
 
 // OpenConnection opens a connection to the DB
-func OpenConnection(connURL string, debugSQL bool) error {
+func (d *dal) OpenConnection(connURL string, debugSQL bool) error {
 	pgOptions, err := pg.ParseURL(connURL)
 	if err != nil {
 		return err
 	}
 
-	db = pg.Connect(pgOptions)
+	d.db = pg.Connect(pgOptions)
 
 	if debugSQL {
-		db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
+		d.db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
 			query, err := event.FormattedQuery()
 			if err != nil {
-				dbLogger.Println("Failed to format query", err)
+				d.logger.Println("Failed to format query", err)
 			}
 
-			dbLogger.Println(query, time.Since(event.StartTime))
+			d.logger.Println(query, time.Since(event.StartTime))
 		})
 	}
 
-	initRepositories()
+	d.users = newUserRepository(d.db)
 
 	return nil
 }
 
-func initRepositories() {
-	Users = NewUserRepository(db)
-}
-
 // Migrate does ...
-func Migrate() error {
+func (d *dal) Migrate() error {
 	// TODO: should this run in a transaction?
 	for _, model := range []interface{}{&models.User{}} {
-		err := db.CreateTable(model, &orm.CreateTableOptions{
+		err := d.db.CreateTable(model, &orm.CreateTableOptions{
 			IfNotExists: true,
 		})
 
@@ -63,10 +74,14 @@ func Migrate() error {
 }
 
 // CloseConnection closes the connection to the DB
-func CloseConnection() {
-	if err := db.Close(); err != nil {
-		dbLogger.Println("Failed to close connection", err)
+func (d *dal) CloseConnection() {
+	if err := d.db.Close(); err != nil {
+		d.logger.Println("Failed to close connection", err)
 	} else {
-		dbLogger.Println("Connection closed")
+		d.logger.Println("Connection closed")
 	}
+}
+
+func (d *dal) Users() UserRepository {
+	return d.users
 }

@@ -19,7 +19,7 @@ type userRepository struct {
 }
 
 // NewUserRepository returns a repository that implements the UserRepository interface
-func NewUserRepository(dbConn *pg.DB) UserRepository {
+func newUserRepository(dbConn *pg.DB) UserRepository {
 	return &userRepository{
 		DB: dbConn,
 	}

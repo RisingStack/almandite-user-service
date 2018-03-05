@@ -12,7 +12,7 @@ import (
 
 	"github.com/RisingStack/almandite-user-service/handlers"
 	"github.com/RisingStack/almandite-user-service/middleware"
-	db "github.com/RisingStack/almandite-user-service/repositories"
+	"github.com/RisingStack/almandite-user-service/repositories"
 )
 
 const DefaultHTTPAddr = ":0"
@@ -39,6 +39,18 @@ func main() {
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 
+	db := repositories.NewDAL()
+
+	if err := db.OpenConnection(
+		GetConfiguration().PostgresURL,
+		GetConfiguration().DebugSQL,
+	); err != nil {
+		log.Fatal("Failed to open DB conenction", err)
+	}
+
+	users, _ := db.Users().Fetch()
+	log.Println(users)
+
 	go func() {
 		select {
 		case <-signalCh:
@@ -47,13 +59,6 @@ func main() {
 			os.Exit(0)
 		}
 	}()
-
-	if err := db.OpenConnection(
-		GetConfiguration().PostgresURL,
-		GetConfiguration().DebugSQL,
-	); err != nil {
-		log.Fatal("Failed to open DB conenction", err)
-	}
 
 	log.Printf("Open the following URL in the browser: http://%s:%d\n", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
 
