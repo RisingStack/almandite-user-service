@@ -10,9 +10,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/RisingStack/almandite-user-service/dal"
 	"github.com/RisingStack/almandite-user-service/handlers"
 	"github.com/RisingStack/almandite-user-service/middleware"
-	"github.com/RisingStack/almandite-user-service/repositories"
 )
 
 const DefaultHTTPAddr = ":0"
@@ -39,7 +39,7 @@ func main() {
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 
-	db := repositories.NewDAL()
+	db := dal.NewDAL()
 
 	if err := db.OpenConnection(
 		GetConfiguration().PostgresURL,
@@ -48,8 +48,9 @@ func main() {
 		log.Fatal("Failed to open DB conenction", err)
 	}
 
-	users, _ := db.Users().Fetch()
-	log.Println(users)
+	if err := db.Migrate(); err != nil {
+		log.Fatal("Failed to migrate DB", err)
+	}
 
 	go func() {
 		select {

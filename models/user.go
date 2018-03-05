@@ -1,6 +1,6 @@
 package models
 
-// User type definition
+// User struct definition
 type User struct {
 	ID        int
 	FirstName string
