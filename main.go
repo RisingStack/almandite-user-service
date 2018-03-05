@@ -13,6 +13,8 @@ import (
 	"github.com/RisingStack/almandite-user-service/dal"
 	"github.com/RisingStack/almandite-user-service/handlers"
 	"github.com/RisingStack/almandite-user-service/middleware"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 const DefaultHTTPAddr = ":0"
