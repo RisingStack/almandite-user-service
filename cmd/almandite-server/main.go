@@ -10,11 +10,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "github.com/joho/godotenv/autoload"
+
+	"github.com/RisingStack/almandite-user-service/config"
 	"github.com/RisingStack/almandite-user-service/dal"
 	"github.com/RisingStack/almandite-user-service/handlers"
 	"github.com/RisingStack/almandite-user-service/middleware"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 const DefaultHTTPAddr = ":0"
@@ -44,14 +45,10 @@ func main() {
 	db := dal.NewDAL()
 
 	if err := db.OpenConnection(
-		GetConfiguration().PostgresURL,
-		GetConfiguration().DebugSQL,
+		config.GetConfiguration().PostgresURL,
+		config.GetConfiguration().DebugSQL,
 	); err != nil {
 		log.Fatal("Failed to open DB conenction", err)
-	}
-
-	if err := db.Migrate(); err != nil {
-		log.Fatal("Failed to migrate DB", err)
 	}
 
 	go func() {

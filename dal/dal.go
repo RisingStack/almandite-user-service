@@ -5,18 +5,16 @@ import (
 	"os"
 	"time"
 
-	"github.com/RisingStack/almandite-user-service/migrations"
-
 	"github.com/go-pg/pg"
 )
 
 // DAL (Data Access Layer)
 type DAL interface {
 	OpenConnection(connURL string, debugSQL bool) error
-	Migrate() error
 	CloseConnection()
 	Users() UserRepository
 	AccessLogs() AccessLogRepository
+	DB() *pg.DB
 }
 
 type dal struct {
@@ -31,6 +29,10 @@ func NewDAL() DAL {
 	return &dal{
 		logger: log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC),
 	}
+}
+
+func (d *dal) DB() *pg.DB {
+	return d.db
 }
 
 // OpenConnection opens a connection to the DB
@@ -55,19 +57,6 @@ func (d *dal) OpenConnection(connURL string, debugSQL bool) error {
 
 	d.users = newUserRepository(d.db)
 	d.accessLogs = newAccessLogRepository(d.db)
-
-	return nil
-}
-
-// Migrate does ...
-func (d *dal) Migrate() error {
-	err := d.db.RunInTransaction(func(tx *pg.Tx) error {
-		return migrations.Run(tx)
-	})
-
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
