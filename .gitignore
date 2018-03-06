@@ -3,6 +3,7 @@
 *.dll
 *.so
 *.dylib
+almandite-user-service
 
 # Test binary, build with `go test -c`
 *.test
@@ -18,3 +19,5 @@ vendor/
 
 # IDE specific folders
 .vscode/
+
+.env
