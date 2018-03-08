@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/RisingStack/almandite-user-service/models"
+	"github.com/RisingStack/almandite-user-service/internal/dal/models"
 )
 
 type fakeUserRepository struct{}

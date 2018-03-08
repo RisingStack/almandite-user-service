@@ -3,7 +3,7 @@ package dal
 import (
 	"log"
 
-	"github.com/RisingStack/almandite-user-service/models"
+	"github.com/RisingStack/almandite-user-service/internal/dal/models"
 	"github.com/go-pg/pg"
 )
 

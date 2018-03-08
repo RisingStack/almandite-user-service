@@ -12,11 +12,11 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"github.com/RisingStack/almandite-user-service/config"
-	"github.com/RisingStack/almandite-user-service/dal"
-	"github.com/RisingStack/almandite-user-service/handlers"
-	"github.com/RisingStack/almandite-user-service/middleware"
-	"github.com/RisingStack/almandite-user-service/middleware/authentication"
+	"github.com/RisingStack/almandite-user-service/internal/config"
+	"github.com/RisingStack/almandite-user-service/internal/dal"
+	"github.com/RisingStack/almandite-user-service/internal/handlers"
+	"github.com/RisingStack/almandite-user-service/internal/handlers/middleware"
+	"github.com/RisingStack/almandite-user-service/internal/handlers/middleware/authentication"
 )
 
 const DefaultHTTPAddr = ":0"

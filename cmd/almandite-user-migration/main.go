@@ -8,12 +8,12 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"github.com/RisingStack/almandite-user-service/config"
-	"github.com/RisingStack/almandite-user-service/dal"
+	"github.com/RisingStack/almandite-user-service/internal/config"
+	"github.com/RisingStack/almandite-user-service/internal/dal"
 	"github.com/go-pg/migrations"
 	"github.com/go-pg/pg"
 
-	_ "github.com/RisingStack/almandite-user-service/migrations"
+	_ "github.com/RisingStack/almandite-user-service/internal/dal/migrations"
 )
 
 const usageText = `This program runs command on the db. Supported commands are:
