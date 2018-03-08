@@ -17,8 +17,8 @@ func init() {
 		return err
 	}, func(db migrations.DB) error {
 		_, err := db.Exec(`
-			DROP TABLE IF EXISTS "users";
-			DROP TABLE IF EXISTS "access_logs"
+			DROP TABLE IF EXISTS "access_logs";
+			DROP TABLE IF EXISTS "users"
 			`)
 
 		return err

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/joho/godotenv/autoload"
 
@@ -14,7 +16,20 @@ import (
 	_ "github.com/RisingStack/almandite-user-service/migrations"
 )
 
+const usageText = `This program runs command on the db. Supported commands are:
+  - up - runs all available migrations.
+  - down - reverts last migration.
+  - reset - reverts all migrations.
+  - version - prints current db version.
+  - set_version [version] - sets db version without running migrations.
+`
+
 func main() {
+	flag.Usage = usage
+	flag.Parse()
+
+	fmt.Println(flag.Args())
+
 	db := dal.NewDAL()
 
 	configuration := config.GetConfiguration()
@@ -27,7 +42,7 @@ func main() {
 	}
 
 	err := db.DB().RunInTransaction(func(tx *pg.Tx) error {
-		oldV, newV, err := migrations.Run(tx, "up")
+		oldV, newV, err := migrations.Run(tx, flag.Args()...)
 		if err != nil {
 			return err
 		}
@@ -39,4 +54,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func usage() {
+	fmt.Printf(usageText)
+	flag.PrintDefaults()
+	os.Exit(2)
 }

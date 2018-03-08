@@ -16,6 +16,7 @@ import (
 	"github.com/RisingStack/almandite-user-service/dal"
 	"github.com/RisingStack/almandite-user-service/handlers"
 	"github.com/RisingStack/almandite-user-service/middleware"
+	"github.com/RisingStack/almandite-user-service/middleware/authentication"
 )
 
 const DefaultHTTPAddr = ":0"
@@ -62,11 +63,27 @@ func main() {
 
 	log.Printf("Open the following URL in the browser: http://%s:%d\n", convertIPtoString(tcpAddr.IP), tcpAddr.Port)
 
+	authStore := authentication.AuthStore{
+		UserRepository: db.Users(),
+	}
+
 	http.HandleFunc("/healthcheck",
 		middleware.Chain(
 			middleware.Timer,
 			middleware.Logger,
 		)(handlers.Healthcheck))
+
+	http.HandleFunc("/alma",
+		middleware.Chain(
+			middleware.Timer,
+			middleware.Logger,
+			authStore.Basic,
+		)(
+			func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, "korte")
+			},
+		),
+	)
 
 	if err := http.Serve(listener, nil); err != nil {
 		log.Fatal(err)

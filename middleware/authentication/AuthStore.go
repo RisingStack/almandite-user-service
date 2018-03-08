@@ -1,9 +1,8 @@
 package authentication
 
-type UserFetcher interface {
-	getUserByUsername(string) (string, error) // TODO return a user type
-}
+import "github.com/RisingStack/almandite-user-service/dal"
 
+// AuthStore encapsulates repository needed for authentication middlewares
 type AuthStore struct {
-	userFetcher UserFetcher
+	UserRepository dal.UserRepository
 }

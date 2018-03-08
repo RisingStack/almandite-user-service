@@ -1,6 +1,8 @@
 package dal
 
 import (
+	"errors"
+
 	"github.com/RisingStack/almandite-user-service/models"
 	"github.com/go-pg/pg"
 )
@@ -8,6 +10,7 @@ import (
 // UserRepository interface
 type UserRepository interface {
 	GetByID(id int) (*models.User, error)
+	GetByUsername(username string) (*models.User, error)
 	Fetch() (*[]models.User, error)
 	Create(user *models.User) error
 	Update(user *models.User) error
@@ -23,6 +26,20 @@ func newUserRepository(dbConn *pg.DB) UserRepository {
 	return &userRepository{
 		DB: dbConn,
 	}
+}
+
+func (u *userRepository) GetByUsername(username string) (*models.User, error) {
+	var users []models.User
+
+	if err := u.DB.Model(&users).Where("username = ?", username).Select(); err != nil {
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, errors.New("User not found")
+	}
+
+	return &users[0], nil
 }
 
 func (u *userRepository) Fetch() (*[]models.User, error) {

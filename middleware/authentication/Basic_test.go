@@ -5,18 +5,38 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/RisingStack/almandite-user-service/models"
 )
 
-type userFetcher struct{}
+type fakeUserRepository struct{}
 
-func (fetcher *userFetcher) getUserByUsername(username string) (string, error) {
+func (r *fakeUserRepository) GetByID(id int) (*models.User, error) {
+	return nil, errors.New("not implemented")
+}
+func (r *fakeUserRepository) GetByUsername(username string) (*models.User, error) {
 	secretUsername := "username"
 	secretPassword := "$2a$10$l9FMrAkcGoFv6ghlHq9CSedTt8QO9AeP3KQEaeOR2p3U1eauOSEoO"
 
 	if username == secretUsername {
-		return secretPassword, nil
+		return &models.User{
+			Username: secretUsername,
+			Password: secretPassword,
+		}, nil
 	}
-	return "", errors.New("Invalid username")
+	return nil, errors.New("Invalid username")
+}
+func (r *fakeUserRepository) Fetch() (*[]models.User, error) {
+	return nil, errors.New("not implemented")
+}
+func (r *fakeUserRepository) Create(user *models.User) error {
+	return errors.New("not implemented")
+}
+func (r *fakeUserRepository) Update(user *models.User) error {
+	return errors.New("not implemented")
+}
+func (r *fakeUserRepository) Delete(id int) error {
+	return errors.New("not implemented")
 }
 
 func TestBasicAuthMissing(t *testing.T) {
@@ -28,7 +48,7 @@ func TestBasicAuthMissing(t *testing.T) {
 	var isHandlerCalled bool
 	rr := httptest.NewRecorder()
 
-	authStore := AuthStore{userFetcher: &userFetcher{}}
+	authStore := AuthStore{UserRepository: &fakeUserRepository{}}
 	handler := authStore.Basic(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isHandlerCalled = true
 	}))
@@ -59,7 +79,7 @@ func TestBasicAuthInvalidUsername(t *testing.T) {
 	rr := httptest.NewRecorder()
 	req.SetBasicAuth("not username", "not password")
 
-	authStore := AuthStore{userFetcher: &userFetcher{}}
+	authStore := AuthStore{UserRepository: &fakeUserRepository{}}
 	handler := authStore.Basic(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isHandlerCalled = true
 	}))
@@ -90,7 +110,7 @@ func TestBasicAuthInvalidPassword(t *testing.T) {
 	rr := httptest.NewRecorder()
 	req.SetBasicAuth("username", "not password")
 
-	authStore := AuthStore{userFetcher: &userFetcher{}}
+	authStore := AuthStore{UserRepository: &fakeUserRepository{}}
 	handler := authStore.Basic(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isHandlerCalled = true
 	}))
@@ -120,7 +140,7 @@ func TestBasicAuthValid(t *testing.T) {
 	var isHandlerCalled bool
 	rr := httptest.NewRecorder()
 	req.SetBasicAuth("username", "password")
-	authStore := AuthStore{userFetcher: &userFetcher{}}
+	authStore := AuthStore{UserRepository: &fakeUserRepository{}}
 	handler := authStore.Basic(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isHandlerCalled = true
 	}))
