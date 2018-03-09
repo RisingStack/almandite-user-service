@@ -19,14 +19,17 @@ jobs:
       - run: make test
 
 workflows:
-  version: 1
+  version: 2
   "test, build, deploy":
     jobs:
       - test:
+        requires:
         filters:
           branches:
             only: /.*/
       - build:
+        requires:
+          - test
         filters:
           branches:
             only: master
