@@ -8,11 +8,8 @@ RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/down
 RUN mkdir -p ${REPOSITORY_PATH}
 WORKDIR ${REPOSITORY_PATH}
 
-COPY Gopkg.toml Gopkg.lock ./
-
-RUN dep ensure -vendor-only
-
 COPY . ${REPOSITORY_PATH}/
+RUN dep ensure -vendor-only
 
 ENV GOOS linux
 ENV GOARCH amd64
