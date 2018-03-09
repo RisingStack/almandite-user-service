@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: library/docker:16.04
+      - image: library/docker:17
     working_directory: /go/src/github.com/RisingStack/almandite-user-service
     steps:
       - checkout
