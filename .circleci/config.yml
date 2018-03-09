@@ -6,6 +6,7 @@ jobs:
     working_directory: /go/src/github.com/RisingStack/almandite-user-service
     steps:
       - checkout
+      - setup_remote_docker
       - run: docker build . -t almandite-user-service
 
   test:
