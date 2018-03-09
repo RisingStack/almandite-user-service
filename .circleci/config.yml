@@ -1,16 +1,33 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
   build:
     docker:
-      # specify the version
-      - image: circleci/golang:1.9
-
+      - image: library/docker:16.04
     working_directory: /go/src/github.com/RisingStack/almandite-user-service
     steps:
       - checkout
-      # specify any bash command here prefixed with `run: `
-      - run: go get -v -t -d ./...
-      - run: go test -v ./...
+      - run: docker build . -t almandite-user-service
+
+  test:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/RisingStack/almandite-user-service
+    steps:
+      - checkout
+      - run: curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
+      - run: make deps
+      - run: make test
+
+workflows:
+  version: 1
+  "test, build, deploy":
+    jobs:
+      - test:
+        filters:
+          branches:
+            only: /.*/
+      - build:
+        filters:
+          branches:
+            only: master
+      
