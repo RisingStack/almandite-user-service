@@ -10,6 +10,6 @@ DEBUG_SQL=true
 ```
 
 ## Startup
-1. Install dependencies with `dep ensure`
-2. Build the project with `go build`
-3. Run the project with `go run *.go` on Linux / Mac or `go build && {name_of_the_executable}.exe` on Windows
+1. Install dependencies with `make deps`
+2. Build the project with `make install`
+3. Run the project with `almandite-user-server` command
