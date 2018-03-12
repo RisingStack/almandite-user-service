@@ -10,8 +10,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "github.com/joho/godotenv/autoload"
-
 	"github.com/RisingStack/almandite-user-service/internal/config"
 	"github.com/RisingStack/almandite-user-service/internal/dal"
 	"github.com/RisingStack/almandite-user-service/internal/handlers"
@@ -84,6 +82,14 @@ func main() {
 			},
 		),
 	)
+
+	loginHandler := handlers.NewLoginHandler(db.Users()).Login
+
+	http.HandleFunc("/login",
+		middleware.Chain(
+			middleware.Timer,
+			middleware.Logger,
+		)(loginHandler))
 
 	if err := http.Serve(listener, nil); err != nil {
 		log.Fatal(err)
