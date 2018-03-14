@@ -13,8 +13,7 @@ func Timer(next http.HandlerFunc) http.HandlerFunc {
 
 		next.ServeHTTP(w, r)
 
-		t := time.Now()
-		elapsed := t.Sub(start).Nanoseconds() / int64(1e+6)
+		elapsed := time.Since(start).Nanoseconds() / int64(1e+6)
 		log.Printf("Response took: %d ms", elapsed)
 	}
 }

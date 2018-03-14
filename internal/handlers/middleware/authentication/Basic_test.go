@@ -40,7 +40,7 @@ func (r *fakeUserRepository) Delete(id int) error {
 }
 
 func TestBasicAuthMissing(t *testing.T) {
-	req, err := http.NewRequest("GET", "/healthcheck", nil)
+	req, err := http.NewRequest(http.MethodGet, "/healthcheck", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

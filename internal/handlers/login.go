@@ -62,7 +62,7 @@ func (l *loginHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(time.Minute).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour).Unix(),
 	})
 
 	signature, err := token.SignedString([]byte(config.GetConfiguration().JwtSigningKey))

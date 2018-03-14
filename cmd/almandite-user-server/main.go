@@ -83,13 +83,25 @@ func main() {
 		),
 	)
 
-	loginHandler := handlers.NewLoginHandler(db.Users()).Login
+	loginHandler := handlers.NewLoginHandler(db.Users())
 
 	http.HandleFunc("/login",
 		middleware.Chain(
 			middleware.Timer,
 			middleware.Logger,
-		)(loginHandler))
+		)(loginHandler.Login))
+
+	http.HandleFunc("/secret",
+		middleware.Chain(
+			middleware.Timer,
+			middleware.Logger,
+			authStore.Jwt,
+		)(
+			func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, "You're authorized")
+			},
+		),
+	)
 
 	if err := http.Serve(listener, nil); err != nil {
 		log.Fatal(err)
