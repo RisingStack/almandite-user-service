@@ -110,7 +110,7 @@ func main() {
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   config.GetConfiguration().CORSAllowedOrigins,
 		AllowCredentials: true,
-		AllowedHeaders:   []string{"Authorization"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		Debug:            config.GetConfiguration().DebugCORS,
 	}).Handler(mux)
 
