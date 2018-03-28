@@ -10,6 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/rs/cors"
+
 	"github.com/RisingStack/almandite-user-service/internal/config"
 	"github.com/RisingStack/almandite-user-service/internal/dal"
 	"github.com/RisingStack/almandite-user-service/internal/handlers"
@@ -65,33 +67,35 @@ func main() {
 		UserRepository: db.Users(),
 	}
 
-	http.HandleFunc("/healthcheck",
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/api/healthcheck",
 		middleware.Chain(
 			middleware.Timer,
 			middleware.Logger,
 		)(handlers.Healthcheck))
 
-	http.HandleFunc("/alma",
+	mux.HandleFunc("/api/basic",
 		middleware.Chain(
 			middleware.Timer,
 			middleware.Logger,
 			authStore.Basic,
 		)(
 			func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprint(w, "korte")
+				fmt.Fprint(w, "You're authorized")
 			},
 		),
 	)
 
 	loginHandler := handlers.NewLoginHandler(db.Users())
 
-	http.HandleFunc("/login",
+	mux.HandleFunc("/api/login",
 		middleware.Chain(
 			middleware.Timer,
 			middleware.Logger,
 		)(loginHandler.Login))
 
-	http.HandleFunc("/secret",
+	mux.HandleFunc("/api/secret",
 		middleware.Chain(
 			middleware.Timer,
 			middleware.Logger,
@@ -103,7 +107,14 @@ func main() {
 		),
 	)
 
-	if err := http.Serve(listener, nil); err != nil {
+	handler := cors.New(cors.Options{
+		AllowedOrigins:   config.GetConfiguration().CORSAllowedOrigins,
+		AllowCredentials: true,
+		AllowedHeaders:   []string{"Authorization"},
+		Debug:            config.GetConfiguration().DebugCORS,
+	}).Handler(mux)
+
+	if err := http.Serve(listener, handler); err != nil {
 		log.Fatal(err)
 	}
 }

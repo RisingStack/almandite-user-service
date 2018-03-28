@@ -7,9 +7,11 @@
 ```
 PG_URL=postgres://postgres:w7o4bvt8ncp0ksd@localhost:5432/almandite?sslmode=disable
 DEBUG_SQL=true
+DEBUG_CORS=true
+CORS_ALLOWED_ORIGINS=*
 ```
 
 ## Startup
 1. Install dependencies with `dep ensure`
-2. Build the project with `go build`
-3. Run the project with `go run *.go` on Linux / Mac or `go build && {name_of_the_executable}.exe` on Windows
+2. Build the project with `make install`
+3. Run the {name_of_the_executable} file

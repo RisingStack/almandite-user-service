@@ -9,9 +9,11 @@ import (
 
 // Configuration ..
 type Configuration struct {
-	PostgresURL   string `envconfig:"pg_url" required:"true"`
-	DebugSQL      bool   `envconfig:"debug_sql" default:"false"`
-	JwtSigningKey string `envonfig:"jwt_signing_key" default:"jwtsigningkey"`
+	PostgresURL        string   `envconfig:"pg_url" required:"true"`
+	DebugSQL           bool     `envconfig:"debug_sql" default:"false"`
+	JwtSigningKey      string   `envonfig:"jwt_signing_key" default:"mysecretkey"`
+	DebugCORS          bool     `envconfig:"debug_cors" default:"false"`
+	CORSAllowedOrigins []string `envconfig:"cors_allowed_origins" required:"true"`
 }
 
 var configuration Configuration

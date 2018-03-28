@@ -27,7 +27,7 @@ type dal struct {
 // NewDAL returns an implementation for the DAL interface
 func NewDAL() DAL {
 	return &dal{
-		logger: log.New(os.Stdout, "PSQL ", log.Ldate|log.Ltime|log.LUTC),
+		logger: log.New(os.Stdout, "[psql] ", log.Ldate|log.Ltime|log.LUTC),
 	}
 }
 

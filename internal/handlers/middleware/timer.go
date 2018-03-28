@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 	"time"
 )
@@ -14,6 +13,6 @@ func Timer(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(w, r)
 
 		elapsed := time.Since(start).Nanoseconds() / int64(1e+6)
-		log.Printf("Response took: %d ms", elapsed)
+		logger.Printf("Response took: %d ms", elapsed)
 	}
 }
